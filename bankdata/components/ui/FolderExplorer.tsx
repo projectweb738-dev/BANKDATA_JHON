@@ -39,6 +39,7 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
   const [showAddFolder, setShowAddFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const [editingItem, setEditingItem] = useState<{ id: number; type: 'folder' | 'file'; name: string } | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -63,6 +64,7 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
   };
 
   useEffect(() => {
+    setSearchQuery(''); // Reset search saat pindah folder
     fetchContent(currentFolder ? currentFolder.id : null, true);
   }, [currentFolder, modul]);
 
@@ -227,6 +229,11 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
     );
   };
 
+  // Filter hasil berdasarkan searchQuery (client-side)
+  const q = searchQuery.trim().toLowerCase();
+  const filteredFolders = q ? folders.filter(f => f.nama.toLowerCase().includes(q)) : folders;
+  const filteredFiles = q ? files.filter(f => f.original_name.toLowerCase().includes(q)) : files;
+
   return (
     <div className="card p-4 sm:p-6 mb-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
@@ -267,6 +274,7 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
         </form>
       )}
 
+      {/* Breadcrumb navigasi + Kotak pencarian */}
       <div className="flex flex-wrap items-center gap-2 mb-4 text-sm font-medium text-slate-600 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
         <button 
           onClick={() => setFolderPath(prev => prev.slice(0, -1))}
@@ -281,7 +289,7 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
         
         <div className="w-px h-5 bg-slate-300 mx-1"></div>
         
-        <div className="flex items-center flex-wrap gap-2">
+        <div className="flex items-center flex-wrap gap-2 flex-1">
           <button 
             onClick={() => setFolderPath([])} 
             className={folderPath.length === 0 ? "text-slate-900 font-semibold cursor-default" : "hover:text-emerald-600 transition-colors"}
@@ -303,6 +311,30 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
             </div>
           ))}
         </div>
+
+        {/* Search box pencarian folder & file */}
+        <div className="relative ml-auto">
+          <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+          </svg>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Cari folder/file..."
+            className="pl-8 pr-3 py-1 text-xs border border-slate-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-emerald-400 focus:border-emerald-400 w-40 sm:w-52 transition-all"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+            >
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
 
       {loading ? (
@@ -314,7 +346,7 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
         </div>
       ) : (
         <div className={`grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 transition-opacity ${isFetching ? 'opacity-50' : 'opacity-100'}`}>
-          {folders.map((folder) => (
+          {filteredFolders.map((folder) => (
             <div key={folder.id} className="border border-slate-200 p-3 rounded-lg hover:border-emerald-500 hover:shadow-sm cursor-pointer transition-all group flex flex-col items-center text-center relative h-32" onClick={() => !editingItem && setFolderPath(prev => [...prev, folder])}>
               <svg className="w-12 h-12 text-emerald-400 mb-1.5 group-hover:text-emerald-500 transition-colors" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
@@ -356,7 +388,7 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
             </div>
           ))}
           
-          {files.map((file) => (
+          {filteredFiles.map((file) => (
             <div key={`file-${file.id}`} className="border border-slate-200 p-3 rounded-lg hover:border-blue-500 hover:shadow-sm transition-all group flex flex-col items-center text-center relative h-32" onClick={() => !editingItem && handleViewFile(file)}>
               {getFileIcon(file.mime_type)}
               
@@ -407,12 +439,12 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
             </div>
           ))}
 
-          {folders.length === 0 && files.length === 0 && (
+          {filteredFolders.length === 0 && filteredFiles.length === 0 && (
             <div className="col-span-full py-8 text-center text-slate-400 text-sm">
               <svg className="w-10 h-10 mx-auto mb-2 text-slate-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-1.883-2.542m-16.5 0V6A2.25 2.25 0 016 3.75h3.879a1.5 1.5 0 011.06.44l2.122 2.12a1.5 1.5 0 001.06.44H18A2.25 2.25 0 0120.25 9v.776" />
               </svg>
-              <p>Folder & File masih kosong</p>
+              <p>{q ? `Tidak ditemukan folder/file "${searchQuery}"` : 'Folder & File masih kosong'}</p>
             </div>
           )}
         </div>
