@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -203,20 +204,14 @@ function SidebarHeaderContent({ user }: { user: SessionUser }) {
     >
       {/* Logo + Text */}
       <div className="flex items-center gap-2 min-w-0">
-        <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center shrink-0 shadow-md">
-          <svg
-            className="w-4 h-4 text-white"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"
-            />
-          </svg>
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
+          <Image
+            src="/logo-sulteng.png"
+            alt="Logo Sulawesi Tengah"
+            width={32}
+            height={32}
+            className="object-contain w-full h-full"
+          />
         </div>
         {!isCollapsed && (
           <div className="min-w-0">

@@ -1,0 +1,23 @@
+const { Client } = require('pg');
+
+async function checkSchema() {
+  const client = new Client({
+    connectionString: 'postgres://postgres.mgmfcxpjweljmyfvjupg:Ideal%20for%20agent-first%20workflows%3A%20update%20your%20schema%20in%20code%2C%20push%20it%20to%20GitHub%2C%20and%20Supa@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres'
+  });
+
+  try {
+    await client.connect();
+    const res = await client.query(`
+      SELECT column_name, data_type 
+      FROM information_schema.columns 
+      WHERE table_schema = 'auth' AND table_name = 'identities';
+    `);
+    console.log('Columns in auth.identities:', res.rows);
+  } catch (err) {
+    console.error('Error:', err);
+  } finally {
+    await client.end();
+  }
+}
+
+checkSchema();
