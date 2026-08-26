@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { requireAuth } from '@/lib/auth';
 import Header from '@/components/layout/Header';
+import SearchBox from '@/components/ui/SearchBox';
 import Pagination from '@/components/ui/Pagination';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/button';
@@ -20,6 +21,7 @@ export default async function KeuanganPage({ searchParams }: PageProps) {
   const [user, params] = await Promise.all([requireAuth(), searchParams]);
   const supabase = await createClient();
 
+  const q = params['q'] ?? '';
   const jenis = params['jenis'] ?? '';
   const dari = params['dari'] ?? '';
   const sampai = params['sampai'] ?? '';
@@ -29,6 +31,7 @@ export default async function KeuanganPage({ searchParams }: PageProps) {
     .is('deleted_at', null).order('tanggal', { ascending: false })
     .range((page - 1) * PER_PAGE, page * PER_PAGE - 1);
 
+  if (q) query = query.or(`no_transaksi.ilike.%${q}%,keterangan.ilike.%${q}%`);
   if (jenis) query = query.eq('jenis', jenis);
   if (dari) query = query.gte('tanggal', dari);
   if (sampai) query = query.lte('tanggal', sampai);
@@ -68,6 +71,10 @@ export default async function KeuanganPage({ searchParams }: PageProps) {
 
         {/* Filter */}
         <div className="card p-4 flex flex-wrap gap-3 items-end">
+          <div className="flex-1 min-w-[200px]">
+            <label className="form-label text-xs">Cari Transaksi</label>
+            <SearchBox placeholder="Cari no. transaksi atau keterangan..." defaultValue={q} />
+          </div>
           <div>
             <label className="form-label text-xs">Jenis</label>
             <FilterDropdown

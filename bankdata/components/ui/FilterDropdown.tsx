@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
+import { useRef, useState, useEffect } from 'react';
 
 interface Option {
   value: string;
@@ -26,29 +27,42 @@ export default function FilterDropdown({
 }: FilterDropdownProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [value, setValue] = useState(defaultValue);
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
-    const value = e.target.value;
-    // Baca URL params saat ini dari window.location tanpa useSearchParams
+  useEffect(() => {
+    setValue(defaultValue);
+  }, [defaultValue]);
+
+  const applyFilter = (val: string) => {
     const url = new URL(window.location.href);
-
-    if (value) {
-      url.searchParams.set(paramName, value);
+    if (val) {
+      url.searchParams.set(paramName, val);
     } else {
       url.searchParams.delete(paramName);
     }
-
-    // Reset page to 1 on filter change
     url.searchParams.delete('page');
-
     router.push(`${pathname}?${url.searchParams.toString()}`);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+    const val = e.target.value;
+    setValue(val);
+
+    // Untuk select, langsung apply. Untuk input text/number/date, debounce
+    if (type === 'select') {
+      applyFilter(val);
+    } else {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => applyFilter(val), 400);
+    }
   };
 
   if (type === 'date' || type === 'number' || type === 'text') {
     return (
       <input
         type={type}
-        defaultValue={defaultValue}
+        value={value}
         className={className}
         onChange={handleChange}
         placeholder={placeholder}
@@ -57,7 +71,7 @@ export default function FilterDropdown({
   }
 
   return (
-    <select defaultValue={defaultValue} className={className} onChange={handleChange}>
+    <select value={value} className={className} onChange={handleChange}>
       <option value="">{placeholder}</option>
       {options.map((opt) => (
         <option key={opt.value} value={opt.value}>
