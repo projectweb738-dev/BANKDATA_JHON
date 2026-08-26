@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Button from '@/components/ui/button';
 import Alert from '@/components/ui/Alert';
 
@@ -9,6 +9,7 @@ interface Folder {
   nama: string;
   modul: string;
   parent_id: number | null;
+  _path?: string[]; // path untuk hasil pencarian global
 }
 
 interface FileItem {
@@ -17,6 +18,7 @@ interface FileItem {
   path: string;
   mime_type: string;
   size_kb: number;
+  _path?: string[]; // path untuk hasil pencarian global
 }
 
 interface FolderExplorerProps {
@@ -40,6 +42,9 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
   const [newFolderName, setNewFolderName] = useState('');
   const [editingItem, setEditingItem] = useState<{ id: number; type: 'folder' | 'file'; name: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<{ folders: Folder[]; files: FileItem[] } | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -65,8 +70,41 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
 
   useEffect(() => {
     setSearchQuery(''); // Reset search saat pindah folder
+    setSearchResults(null);
     fetchContent(currentFolder ? currentFolder.id : null, true);
   }, [currentFolder, modul]);
+
+  // Pencarian global ke semua sub-folder via API
+  const handleGlobalSearch = useCallback((query: string) => {
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    if (!query.trim()) {
+      setSearchResults(null);
+      return;
+    }
+    setIsSearching(true);
+    searchTimerRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/folder?modul=${modul}&global=true&q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        setSearchResults({ folders: data.data ?? [], files: data.files ?? [] });
+      } catch {
+        setSearchResults({ folders: [], files: [] });
+      } finally {
+        setIsSearching(false);
+      }
+    }, 350);
+  }, [modul]);
+
+  const handleSearchChange = (val: string) => {
+    setSearchQuery(val);
+    handleGlobalSearch(val);
+  };
+
+  const clearSearch = () => {
+    setSearchQuery('');
+    setSearchResults(null);
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+  };
 
   const handleAddFolder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -229,10 +267,10 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
     );
   };
 
-  // Filter hasil berdasarkan searchQuery (client-side)
+  // Gunakan hasil dari API jika ada, atau filter secara lokal jika belum (fallback)
   const q = searchQuery.trim().toLowerCase();
-  const filteredFolders = q ? folders.filter(f => f.nama.toLowerCase().includes(q)) : folders;
-  const filteredFiles = q ? files.filter(f => f.original_name.toLowerCase().includes(q)) : files;
+  const displayFolders = searchResults ? searchResults.folders : (q ? folders.filter(f => f.nama.toLowerCase().includes(q)) : folders);
+  const displayFiles = searchResults ? searchResults.files : (q ? files.filter(f => f.original_name.toLowerCase().includes(q)) : files);
 
   return (
     <div className="card p-4 sm:p-6 mb-6">
@@ -337,7 +375,7 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
         </div>
       </div>
 
-      {loading ? (
+      {loading || isSearching ? (
         <div className="flex justify-center items-center py-12">
           <svg className="animate-spin h-8 w-8 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -346,7 +384,7 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
         </div>
       ) : (
         <div className={`grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 transition-opacity ${isFetching ? 'opacity-50' : 'opacity-100'}`}>
-          {filteredFolders.map((folder) => (
+          {displayFolders.map((folder) => (
             <div key={folder.id} className="border border-slate-200 p-3 rounded-lg hover:border-emerald-500 hover:shadow-sm cursor-pointer transition-all group flex flex-col items-center text-center relative h-32" onClick={() => !editingItem && setFolderPath(prev => [...prev, folder])}>
               <svg className="w-12 h-12 text-emerald-400 mb-1.5 group-hover:text-emerald-500 transition-colors" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
@@ -364,7 +402,14 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
                   />
                 </form>
               ) : (
-                <span className="text-xs font-medium text-slate-700 truncate w-full mt-1 px-1">{folder.nama}</span>
+                <>
+                  <span className="text-xs font-medium text-slate-700 truncate w-full mt-1 px-1">{folder.nama}</span>
+                  {folder._path && folder._path.length > 0 && (
+                    <span className="text-[9px] text-slate-400 truncate w-full mt-0.5">
+                      {folder._path.join(' / ')}
+                    </span>
+                  )}
+                </>
               )}
               
               {canManage && !editingItem && (
@@ -388,7 +433,7 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
             </div>
           ))}
           
-          {filteredFiles.map((file) => (
+          {displayFiles.map((file) => (
             <div key={`file-${file.id}`} className="border border-slate-200 p-3 rounded-lg hover:border-blue-500 hover:shadow-sm transition-all group flex flex-col items-center text-center relative h-32" onClick={() => !editingItem && handleViewFile(file)}>
               {getFileIcon(file.mime_type)}
               
@@ -404,7 +449,14 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
                   />
                 </form>
               ) : (
-                <span className="text-xs font-medium text-slate-700 truncate w-full mt-1 px-1 cursor-pointer" title={file.original_name}>{file.original_name}</span>
+                <>
+                  <span className="text-xs font-medium text-slate-700 truncate w-full mt-1 px-1 cursor-pointer" title={file.original_name}>{file.original_name}</span>
+                  {file._path && file._path.length > 0 && (
+                    <span className="text-[9px] text-slate-400 truncate w-full mt-0.5">
+                      {file._path.join(' / ')}
+                    </span>
+                  )}
+                </>
               )}
               
               <span className="text-[10px] text-slate-400 mt-auto">{file.size_kb} KB</span>
@@ -439,12 +491,12 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
             </div>
           ))}
 
-          {filteredFolders.length === 0 && filteredFiles.length === 0 && (
+          {displayFolders.length === 0 && displayFiles.length === 0 && (
             <div className="col-span-full py-8 text-center text-slate-400 text-sm">
               <svg className="w-10 h-10 mx-auto mb-2 text-slate-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-1.883-2.542m-16.5 0V6A2.25 2.25 0 016 3.75h3.879a1.5 1.5 0 011.06.44l2.122 2.12a1.5 1.5 0 001.06.44H18A2.25 2.25 0 0120.25 9v.776" />
               </svg>
-              <p>{q ? `Tidak ditemukan folder/file "${searchQuery}"` : 'Folder & File masih kosong'}</p>
+              <p>{q ? `Tidak ditemukan folder/file "${searchQuery}" di seluruh modul` : 'Folder & File masih kosong'}</p>
             </div>
           )}
         </div>

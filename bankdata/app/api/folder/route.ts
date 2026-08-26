@@ -9,8 +9,70 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const modul = searchParams.get('modul');
   const parentId = searchParams.get('parent_id'); // can be "null" string or number
+  const q = (searchParams.get('q') ?? '').trim().toLowerCase();
+  const globalSearch = searchParams.get('global') === 'true';
 
   const supabase = await createClient();
+
+  // ── MODE PENCARIAN GLOBAL ─────────────────────────────────────────────────
+  // Ketika ada kata kunci, cari di semua folder & file tanpa filter parent_id
+  if (globalSearch && q) {
+    // Ambil semua folder di modul ini (tanpa filter parent_id)
+    let allFoldersQuery = supabase
+      .from('folders')
+      .select('*')
+      .is('deleted_at', null)
+      .order('nama', { ascending: true });
+    if (modul) allFoldersQuery = allFoldersQuery.eq('modul', modul);
+    const { data: allFolders } = await allFoldersQuery;
+
+    // Ambil semua attachment di modul ini
+    let allFilesQuery = supabase
+      .from('attachments')
+      .select('*')
+      .order('original_name', { ascending: true });
+    if (modul) allFilesQuery = allFilesQuery.or(`attachable_type.eq.${modul},attachable_type.eq.App\\Models\\Folder`);
+    const { data: allFiles } = await allFilesQuery;
+
+    // Buat map id -> folder untuk resolusi path
+    const folderMap = new Map<number, { id: number; nama: string; parent_id: number | null }>(
+      (allFolders ?? []).map(f => [f.id, f])
+    );
+
+    // Fungsi bantu: resolusi path folder ke array nama
+    function buildPath(folderId: number | null): string[] {
+      if (!folderId) return [];
+      const path: string[] = [];
+      let current = folderMap.get(folderId);
+      while (current) {
+        path.unshift(current.nama);
+        current = current.parent_id ? folderMap.get(current.parent_id) : undefined;
+      }
+      return path;
+    }
+
+    // Filter folder yang cocok dengan kata kunci
+    const matchedFolders = (allFolders ?? [])
+      .filter(f => f.nama.toLowerCase().includes(q))
+      .map(f => ({
+        ...f,
+        _path: buildPath(f.parent_id), // path parent sebelum folder ini
+      }));
+
+    // Filter file yang cocok dengan kata kunci
+    const matchedFiles = (allFiles ?? [])
+      .filter(f => f.original_name.toLowerCase().includes(q))
+      .map(f => ({
+        ...f,
+        _path: f.attachable_type === 'App\\Models\\Folder'
+          ? buildPath(f.attachable_id)
+          : [], // file di root modul
+      }));
+
+    return NextResponse.json({ data: matchedFolders, files: matchedFiles, globalSearch: true });
+  }
+
+  // ── MODE NORMAL: tampilkan konten folder saat ini ─────────────────────────
   let query = supabase.from('folders').select('*').is('deleted_at', null).order('nama', { ascending: true });
 
   if (modul) query = query.eq('modul', modul);
