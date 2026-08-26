@@ -34,7 +34,7 @@ export default async function DashboardLayout({
           <SidebarTrigger className="text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-md p-1.5 transition-colors shrink-0" />
           <div className="h-4 w-px bg-slate-200 shrink-0" />
           <span className="text-xs font-medium text-slate-500 truncate">
-            BPKAD Provinsi Sulawesi Tengah
+            Sistem Informasi Bank Data
           </span>
         </header>
         <main className="flex-1 overflow-auto">{children}</main>

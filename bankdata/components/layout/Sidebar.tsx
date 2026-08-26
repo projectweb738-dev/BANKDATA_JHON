@@ -219,7 +219,7 @@ function SidebarHeaderContent({ user }: { user: SessionUser }) {
               Bank Data
             </p>
             <p className="text-[11px] text-slate-400 truncate leading-tight">
-              {user.unit_kerja ?? "BPKAD Provinsi Sulawesi Tengah"}
+              {user.unit_kerja || "BPKAD Provinsi Sulawesi Tengah"}
             </p>
           </div>
         )}

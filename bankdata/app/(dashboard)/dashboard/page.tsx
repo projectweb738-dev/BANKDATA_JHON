@@ -113,15 +113,6 @@ export default async function DashboardPage() {
 
   return (
     <>
-      {/* Topbar */}
-      <header className="sticky top-0 z-20 flex h-11 shrink-0 items-center gap-3 border-b border-slate-200 bg-white px-4">
-        <SidebarTrigger className="text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-md p-1.5 transition-colors shrink-0" />
-        <div className="h-4 w-px bg-slate-200 shrink-0" />
-        <span className="text-xs font-medium text-slate-500 truncate">
-          BPKAD Provinsi Sulawesi Tengah
-        </span>
-      </header>
-
       <div>
         <Header
           title="Dashboard"
