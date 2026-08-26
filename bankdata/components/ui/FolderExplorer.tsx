@@ -287,7 +287,7 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
             className={folderPath.length === 0 ? "text-slate-900 font-semibold cursor-default" : "hover:text-emerald-600 transition-colors"}
             disabled={folderPath.length === 0}
           >
-            Root Folder
+            Home
           </button>
           
           {folderPath.map((folder, index) => (

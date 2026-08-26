@@ -57,17 +57,35 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: 'Validasi gagal.', errors }, { status: 422 });
   }
 
-  const { createServiceClient } = await import('@/lib/supabase/server');
-  const supabase = await createServiceClient();
+  // Log user info for debugging
+  console.log('[POST /api/folder] user.id:', user.id, 'email:', user.email);
+  console.log('[POST /api/folder] SERVICE_ROLE_KEY present:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-  const { data, error } = await supabase.from('folders').insert({
+  let supabase;
+  try {
+    const { createServiceClient, createClient } = await import('@/lib/supabase/server');
+    supabase = process.env.SUPABASE_SERVICE_ROLE_KEY
+      ? await createServiceClient()
+      : await createClient();
+  } catch (clientErr: any) {
+    console.error('[POST /api/folder] Failed to create supabase client:', clientErr);
+    return NextResponse.json({ message: `Gagal membuat koneksi DB: ${clientErr.message}` }, { status: 500 });
+  }
+
+  const insertPayload = {
     nama: body['nama'],
     modul: body['modul'],
     parent_id: body['parent_id'] ? Number(body['parent_id']) : null,
     created_by: user.id,
-  }).select().single();
+  };
+  console.log('[POST /api/folder] insert payload:', insertPayload);
 
-  if (error) return NextResponse.json({ message: error.message }, { status: 500 });
+  const { data, error } = await supabase.from('folders').insert(insertPayload).select().single();
+
+  if (error) {
+    console.error('[POST /api/folder] DB error:', error);
+    return NextResponse.json({ message: `DB Error: ${error.message} (code: ${error.code})` }, { status: 500 });
+  }
 
   await logActivity({ logName: 'folder', description: `Membuat folder ${data.nama}`, causerId: user.id, subjectType: 'folder', subjectId: data.id });
   return NextResponse.json({ data, message: 'Folder berhasil dibuat.' }, { status: 201 });
