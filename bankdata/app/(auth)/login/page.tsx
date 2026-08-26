@@ -135,7 +135,7 @@ function LoginContent() {
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="space-y-5">
+          <form onSubmit={handleLogin} className="space-y-5" autoComplete="off">
             {/* Email */}
             <div>
               <label
@@ -149,7 +149,7 @@ function LoginContent() {
                 name="email"
                 type="email"
                 required
-                autoComplete="email"
+                autoComplete="off"
                 placeholder=""
                 className={cn(
                   "w-full px-4 py-2.5 rounded-xl text-sm",
@@ -174,7 +174,7 @@ function LoginContent() {
                   name="password"
                   type={showPassword ? "text" : "password"}
                   required
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                   placeholder=""
                   className={cn(
                     "w-full px-4 py-2.5 pr-10 rounded-xl text-sm",
