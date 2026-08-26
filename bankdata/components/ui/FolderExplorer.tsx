@@ -30,7 +30,8 @@ const MAX_SIZE_MB = 69;
 export default function FolderExplorer({ modul, canManage = false }: FolderExplorerProps) {
   const [folders, setFolders] = useState<Folder[]>([]);
   const [files, setFiles] = useState<FileItem[]>([]);
-  const [currentFolder, setCurrentFolder] = useState<Folder | null>(null);
+  const [folderPath, setFolderPath] = useState<Folder[]>([]);
+  const currentFolder = folderPath.length > 0 ? folderPath[folderPath.length - 1] : null;
   const [loading, setLoading] = useState(true);
   const [isFetching, setIsFetching] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -267,15 +268,41 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
       )}
 
       <div className="flex flex-wrap items-center gap-2 mb-4 text-sm font-medium text-slate-600 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
-        <button onClick={() => setCurrentFolder(null)} className="hover:text-emerald-600">
-          Root Folder
+        <button 
+          onClick={() => setFolderPath(prev => prev.slice(0, -1))}
+          className={`flex items-center justify-center p-1 rounded transition-colors ${folderPath.length === 0 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-700 hover:bg-slate-200 hover:text-emerald-600'}`}
+          disabled={folderPath.length === 0}
+          title="Kembali ke folder sebelumnya"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+          </svg>
         </button>
-        {currentFolder && (
-          <>
-            <span>/</span>
-            <span className="text-slate-900">{currentFolder.nama}</span>
-          </>
-        )}
+        
+        <div className="w-px h-5 bg-slate-300 mx-1"></div>
+        
+        <div className="flex items-center flex-wrap gap-2">
+          <button 
+            onClick={() => setFolderPath([])} 
+            className={folderPath.length === 0 ? "text-slate-900 font-semibold cursor-default" : "hover:text-emerald-600 transition-colors"}
+            disabled={folderPath.length === 0}
+          >
+            Root Folder
+          </button>
+          
+          {folderPath.map((folder, index) => (
+            <div key={folder.id} className="flex items-center gap-2">
+              <span className="text-slate-400">/</span>
+              <button 
+                onClick={() => setFolderPath(prev => prev.slice(0, index + 1))}
+                className={index === folderPath.length - 1 ? "text-slate-900 font-semibold cursor-default" : "hover:text-emerald-600 transition-colors"}
+                disabled={index === folderPath.length - 1}
+              >
+                {folder.nama}
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
 
       {loading ? (
@@ -288,7 +315,7 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
       ) : (
         <div className={`grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 transition-opacity ${isFetching ? 'opacity-50' : 'opacity-100'}`}>
           {folders.map((folder) => (
-            <div key={folder.id} className="border border-slate-200 p-3 rounded-lg hover:border-emerald-500 hover:shadow-sm cursor-pointer transition-all group flex flex-col items-center text-center relative h-32" onClick={() => !editingItem && setCurrentFolder(folder)}>
+            <div key={folder.id} className="border border-slate-200 p-3 rounded-lg hover:border-emerald-500 hover:shadow-sm cursor-pointer transition-all group flex flex-col items-center text-center relative h-32" onClick={() => !editingItem && setFolderPath(prev => [...prev, folder])}>
               <svg className="w-12 h-12 text-emerald-400 mb-1.5 group-hover:text-emerald-500 transition-colors" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
               </svg>
