@@ -15,6 +15,11 @@ export const metadata: Metadata = {
     "Sistem Bank Data internal Kantor Gubernur Sulawesi Tengah. Kelola data kepegawaian, program kerja, aset, dan keuangan secara terpadu.",
   keywords: ["bank data", "sulawesi tengah", "kepegawaian", "aset", "keuangan"],
   robots: { index: false, follow: false }, // aplikasi internal
+  icons: {
+    icon: "/logo-sulteng.png",
+    shortcut: "/logo-sulteng.png",
+    apple: "/logo-sulteng.png",
+  },
 };
 
 export default function RootLayout({
