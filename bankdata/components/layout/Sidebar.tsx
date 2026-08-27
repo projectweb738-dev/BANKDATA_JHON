@@ -303,7 +303,9 @@ export default function Sidebar({ user }: SidebarProps) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              tooltip={`${user.name} (${user.role})`}
+              render={<Link href="/profil" />}
+              isActive={pathname === '/profil'}
+              tooltip="Profil Akun"
               size="lg"
               className="text-slate-300 hover:bg-white/10 hover:text-white rounded-lg"
             >

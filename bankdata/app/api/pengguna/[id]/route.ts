@@ -51,10 +51,12 @@ export async function PATCH(
 
   const body = await request.json() as {
     name?: string;
+    email?: string;
     role?: string;
     unit_kerja?: string;
     is_active?: boolean;
     password?: string;
+    old_password?: string; // referensi untuk log
   };
 
   const updatePayload: Record<string, unknown> = {
@@ -65,6 +67,11 @@ export async function PATCH(
       is_active: body.is_active !== false,
     },
   };
+
+  // Admin bisa mengubah email pengguna
+  if (body.email && body.email.trim()) {
+    updatePayload['email'] = body.email.trim();
+  }
 
   if (body.password) {
     updatePayload['password'] = body.password;
@@ -81,12 +88,21 @@ export async function PATCH(
     return NextResponse.json({ error: err.message ?? 'Gagal memperbarui pengguna.' }, { status: res.status });
   }
 
+  // ── Catat log aktivitas ───────────────────────────────────────────────────
   const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'Unknown IP';
+  const logProperties: Record<string, unknown> = { ip };
+
+  if (body.email) logProperties['email_baru'] = body.email;
+  if (body.password) {
+    logProperties['password_lama'] = body.old_password ?? '(tidak diberikan)';
+    logProperties['password_baru'] = body.password;
+  }
+
   await logActivity({
     logName: 'pengguna',
-    description: `Update pengguna: ${body.name || id}`,
+    description: `Admin memperbarui pengguna: ${body.name || body.email || id}`,
     causerId: currentUser.id,
-    properties: { ip },
+    properties: logProperties,
   });
 
   return NextResponse.json({ message: 'Pengguna berhasil diperbarui.' });

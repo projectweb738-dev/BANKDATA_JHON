@@ -66,14 +66,17 @@ export default function EditPenggunaPage() {
     const form = new FormData(e.currentTarget);
     const payload: Record<string, unknown> = {
       name: form.get('name') as string,
+      email: form.get('email') as string,
       role: form.get('role') as string,
       unit_kerja: form.get('unit_kerja') as string,
       is_active: form.get('is_active') === 'true',
     };
 
     const newPassword = form.get('password') as string;
+    const oldPassword = form.get('old_password') as string;
     if (newPassword) {
       payload['password'] = newPassword;
+      payload['old_password'] = oldPassword;
     }
 
     const res = await fetch(`/api/pengguna/${userId}`, {
@@ -138,11 +141,12 @@ export default function EditPenggunaPage() {
                 <label className="form-label">Email</label>
                 <input
                   type="email"
-                  value={userData.email}
-                  disabled
-                  className="form-input opacity-60 cursor-not-allowed"
+                  name="email"
+                  defaultValue={userData.email}
+                  className="form-input"
+                  placeholder="Alamat email"
                 />
-                <p className="mt-1 text-xs text-slate-500">Email tidak dapat diubah.</p>
+                <p className="mt-1 text-xs text-slate-500">Email dapat diubah oleh admin.</p>
               </div>
 
               <Input
@@ -152,6 +156,14 @@ export default function EditPenggunaPage() {
                 required
                 defaultValue={userData.user_metadata?.name ?? ''}
                 placeholder="Nama pengguna"
+              />
+
+              <Input
+                label="Kata Sandi Lama (untuk Log)"
+                name="old_password"
+                type="password"
+                placeholder="Masukkan password lama pengguna (opsional)"
+                hint="Dicatat di log aktivitas untuk referensi."
               />
 
               <Input
