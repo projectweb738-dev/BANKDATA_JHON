@@ -97,7 +97,7 @@ export default function TambahPenggunaPage() {
               name="email"
               type="email"
               required
-              placeholder="email@sulteng.go.id"
+              placeholder="email@sulteng"
             />
             <Input
               label="Kata Sandi"

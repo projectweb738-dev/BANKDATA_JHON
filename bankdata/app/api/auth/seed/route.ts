@@ -17,11 +17,11 @@ export async function GET() {
         });
 
     const usersToCreate = [
-      { email: 'admin@sulteng.go.id', role: 'admin', name: 'Administrator' },
-      { email: 'keuangan@sulteng.go.id', role: 'operator-keuangan', name: 'Bagian Keuangan' },
-      { email: 'pegawai@sulteng.go.id', role: 'operator-kepegawaian', name: 'Bagian Kepegawaian' },
-      { email: 'program@sulteng.go.id', role: 'operator-program', name: 'Bagian Program' },
-      { email: 'aset@sulteng.go.id', role: 'operator-aset', name: 'Bagian Aset' },
+      { email: 'admin@sulteng', role: 'admin', name: 'Administrator' },
+      { email: 'keuangan@sulteng', role: 'operator-keuangan', name: 'Bagian Keuangan' },
+      { email: 'pegawai@sulteng', role: 'operator-kepegawaian', name: 'Bagian Kepegawaian' },
+      { email: 'program@sulteng', role: 'operator-program', name: 'Bagian Program' },
+      { email: 'aset@sulteng', role: 'operator-aset', name: 'Bagian Aset' },
     ];
 
     const results = [];
