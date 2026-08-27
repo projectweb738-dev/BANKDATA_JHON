@@ -74,7 +74,11 @@ export async function POST(request: NextRequest) {
   const data = await res.json() as { id?: string; message?: string };
 
   if (!res.ok) {
-    return NextResponse.json({ error: data.message ?? 'Gagal membuat pengguna.' }, { status: res.status });
+    let errorMsg = data.message ?? 'Gagal membuat pengguna.';
+    if (errorMsg.includes('Password should be at least 6 characters')) {
+      errorMsg = 'Sistem keamanan Supabase menolak: Kata sandi minimal harus 6 karakter.';
+    }
+    return NextResponse.json({ error: errorMsg }, { status: res.status });
   }
 
   const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'Unknown IP';

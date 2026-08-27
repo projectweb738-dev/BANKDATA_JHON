@@ -63,8 +63,12 @@ export async function PUT(request: NextRequest) {
 
     if (!res.ok) {
       const err = await res.json() as { message?: string };
+      let errorMsg = err.message ?? 'Gagal memperbarui profil.';
+      if (errorMsg.includes('Password should be at least 6 characters')) {
+        errorMsg = 'Sistem keamanan Supabase menolak: Kata sandi minimal harus 6 karakter.';
+      }
       return NextResponse.json(
-        { error: err.message ?? 'Gagal memperbarui profil.' },
+        { error: errorMsg },
         { status: res.status },
       );
     }
@@ -78,8 +82,12 @@ export async function PUT(request: NextRequest) {
     const { error: updateError } = await supabase.auth.updateUser(userUpdate);
     
     if (updateError) {
+      let errorMsg = updateError.message ?? 'Gagal memperbarui profil.';
+      if (errorMsg.includes('Password should be at least 6 characters')) {
+        errorMsg = 'Sistem keamanan Supabase menolak: Kata sandi minimal harus 6 karakter.';
+      }
       return NextResponse.json(
-        { error: updateError.message ?? 'Gagal memperbarui profil.' },
+        { error: errorMsg },
         { status: 400 },
       );
     }
