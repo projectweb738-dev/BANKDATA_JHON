@@ -34,7 +34,7 @@ function LoginContent() {
     const password = form.get("password") as string;
 
     const supabase = createClient();
-    const { error: authError } = await supabase.auth.signInWithPassword({
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -51,10 +51,8 @@ function LoginContent() {
       return;
     }
 
-    // Cek user_metadata is_active
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    // Cek user_metadata is_active dari data yang sudah dikembalikan saat signIn
+    const user = authData.user;
     if (user && user.user_metadata?.["is_active"] === false) {
       await supabase.auth.signOut();
       setLoading(false);
@@ -62,8 +60,8 @@ function LoginContent() {
       return;
     }
 
-    // Catat log login
-    await fetch("/api/auth/log-login", { method: "POST" }).catch(() => {});
+    // Catat log login (fire and forget, jangan di-await agar tidak menghambat loading screen login)
+    fetch("/api/auth/log-login", { method: "POST" }).catch(() => {});
 
     const role = user?.user_metadata?.["role"];
     if (role === "operator-kepegawaian") {
