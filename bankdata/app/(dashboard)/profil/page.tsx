@@ -59,11 +59,6 @@ export default function ProfilPage() {
       return;
     }
 
-    if (password && password.length < 6) {
-      setError('Kata sandi baru minimal 6 karakter.');
-      setLoading(false);
-      return;
-    }
 
     const payload: Record<string, string> = { name };
     if (email && email !== profile?.email) payload['email'] = email;
