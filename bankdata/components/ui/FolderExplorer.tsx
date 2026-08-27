@@ -274,8 +274,8 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
   const displayFiles = searchResults ? searchResults.files : (q ? files.filter(f => f.original_name.toLowerCase().includes(q)) : files);
 
   return (
-    <div className="card p-4 sm:p-6 mb-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+    <div className="card p-4 flex flex-col h-full overflow-hidden">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 shrink-0">
         <h3 className="font-semibold text-slate-800">Manajemen Dokumen</h3>
         {canManage && (
           <div className="flex flex-wrap gap-2 w-full sm:w-auto">
@@ -296,10 +296,10 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
         )}
       </div>
 
-      {error && <Alert type="error" className="mb-4">{error}</Alert>}
+      {error && <Alert type="error" className="mb-4 shrink-0">{error}</Alert>}
 
       {showAddFolder && (
-        <form onSubmit={handleAddFolder} className="mb-6 flex flex-wrap gap-2 max-w-sm">
+        <form onSubmit={handleAddFolder} className="mb-6 flex flex-wrap gap-2 max-w-sm shrink-0">
           <input
             type="text"
             value={newFolderName}
@@ -314,7 +314,7 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
       )}
 
       {/* Breadcrumb navigasi + Kotak pencarian */}
-      <div className="flex flex-wrap items-center gap-2 mb-4 text-sm font-medium text-slate-600 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+      <div className="flex flex-wrap items-center gap-2 mb-4 text-sm font-medium text-slate-600 bg-slate-50 p-2.5 rounded-lg border border-slate-200 shrink-0">
         <button 
           onClick={() => setFolderPath(prev => prev.slice(0, -1))}
           className={`flex items-center justify-center p-1 rounded transition-colors ${folderPath.length === 0 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-700 hover:bg-slate-200 hover:text-emerald-600'}`}
@@ -377,14 +377,14 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
       </div>
 
       {loading || isSearching ? (
-        <div className="flex justify-center items-center py-12">
+        <div className="flex justify-center items-center py-12 flex-1">
           <svg className="animate-spin h-8 w-8 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
         </div>
       ) : (
-        <div className={`flex flex-col gap-3 transition-opacity ${isFetching ? 'opacity-50' : 'opacity-100'}`}>
+        <div className={`flex-1 overflow-y-auto pr-2 flex flex-col gap-3 transition-opacity ${isFetching ? 'opacity-50' : 'opacity-100'}`}>
           {displayFolders.map((folder) => (
             <div key={folder.id} className="border border-slate-200 p-3 rounded-lg hover:border-emerald-500 hover:shadow-sm cursor-pointer transition-all group flex items-center gap-4 relative bg-white" onClick={() => !editingItem && setFolderPath(prev => [...prev, folder])}>
               <svg className="w-8 h-8 flex-shrink-0 text-emerald-400 group-hover:text-emerald-500 transition-colors" fill="currentColor" viewBox="0 0 20 20">

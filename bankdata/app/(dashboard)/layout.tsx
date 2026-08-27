@@ -28,7 +28,7 @@ export default async function DashboardLayout({
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <Sidebar user={user} />
-      <SidebarInset className="bg-slate-50 flex flex-col w-full min-h-screen">
+      <SidebarInset className="bg-slate-50 flex flex-col w-full h-screen overflow-hidden">
         {/* Topbar */}
         <header className="sticky top-0 z-20 flex h-11 shrink-0 items-center gap-3 border-b border-slate-200 bg-white px-4">
           <SidebarTrigger className="text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-md p-1.5 transition-colors shrink-0" />
@@ -37,7 +37,7 @@ export default async function DashboardLayout({
             Sistem Informasi Bank Data
           </span>
         </header>
-        <main className="flex-1 overflow-auto">{children}</main>
+        <main className="flex-1 overflow-hidden flex flex-col">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );
