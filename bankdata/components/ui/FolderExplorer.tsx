@@ -252,17 +252,17 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
 
   const getFileIcon = (mime: string) => {
     if (mime.startsWith('image/')) return (
-      <svg className="w-12 h-12 text-blue-400 mb-1.5 group-hover:text-blue-500 transition-colors" fill="currentColor" viewBox="0 0 20 20">
+      <svg className="w-8 h-8 text-blue-400 group-hover:text-blue-500 transition-colors" fill="currentColor" viewBox="0 0 20 20">
         <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
       </svg>
     );
     if (mime.includes('pdf')) return (
-      <svg className="w-12 h-12 text-red-500 mb-1.5 group-hover:text-red-600 transition-colors" fill="currentColor" viewBox="0 0 20 20">
+      <svg className="w-8 h-8 text-red-500 group-hover:text-red-600 transition-colors" fill="currentColor" viewBox="0 0 20 20">
         <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
       </svg>
     );
     return (
-      <svg className="w-12 h-12 text-slate-400 mb-1.5 group-hover:text-slate-500 transition-colors" fill="currentColor" viewBox="0 0 20 20">
+      <svg className="w-8 h-8 text-slate-400 group-hover:text-slate-500 transition-colors" fill="currentColor" viewBox="0 0 20 20">
         <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
       </svg>
     );
@@ -384,50 +384,52 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
           </svg>
         </div>
       ) : (
-        <div className={`grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 transition-opacity ${isFetching ? 'opacity-50' : 'opacity-100'}`}>
+        <div className={`flex flex-col gap-3 transition-opacity ${isFetching ? 'opacity-50' : 'opacity-100'}`}>
           {displayFolders.map((folder) => (
-            <div key={folder.id} className="border border-slate-200 p-3 rounded-lg hover:border-emerald-500 hover:shadow-sm cursor-pointer transition-all group flex flex-col items-center text-center relative h-32" onClick={() => !editingItem && setFolderPath(prev => [...prev, folder])}>
-              <svg className="w-12 h-12 text-emerald-400 mb-1.5 group-hover:text-emerald-500 transition-colors" fill="currentColor" viewBox="0 0 20 20">
+            <div key={folder.id} className="border border-slate-200 p-3 rounded-lg hover:border-emerald-500 hover:shadow-sm cursor-pointer transition-all group flex items-center gap-4 relative bg-white" onClick={() => !editingItem && setFolderPath(prev => [...prev, folder])}>
+              <svg className="w-8 h-8 flex-shrink-0 text-emerald-400 group-hover:text-emerald-500 transition-colors" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
               </svg>
               
-              {editingItem?.id === folder.id && editingItem.type === 'folder' ? (
-                <form onSubmit={handleRename} className="w-full mt-1" onClick={(e) => e.stopPropagation()}>
-                  <input
-                    type="text"
-                    value={editingItem.name}
-                    onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
-                    className="w-full text-xs p-1 border border-emerald-500 rounded outline-none"
-                    autoFocus
-                    onBlur={() => setEditingItem(null)}
-                  />
-                </form>
-              ) : (
-                <>
-                  <span className="text-xs font-medium text-slate-700 truncate w-full mt-1 px-1">{folder.nama}</span>
-                  {folder._path && folder._path.length > 0 && (
-                    <span className="text-[9px] text-slate-400 truncate w-full mt-0.5">
-                      {folder._path.join(' / ')}
-                    </span>
-                  )}
-                </>
-              )}
+              <div className="flex flex-col min-w-0 flex-1">
+                {editingItem?.id === folder.id && editingItem.type === 'folder' ? (
+                  <form onSubmit={handleRename} className="w-full max-w-xs" onClick={(e) => e.stopPropagation()}>
+                    <input
+                      type="text"
+                      value={editingItem.name}
+                      onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
+                      className="w-full text-sm p-1 border border-emerald-500 rounded outline-none"
+                      autoFocus
+                      onBlur={() => setEditingItem(null)}
+                    />
+                  </form>
+                ) : (
+                  <>
+                    <span className="text-sm font-medium text-slate-700 truncate">{folder.nama}</span>
+                    {folder._path && folder._path.length > 0 && (
+                      <span className="text-[10px] text-slate-400 truncate">
+                        {folder._path.join(' / ')}
+                      </span>
+                    )}
+                  </>
+                )}
+              </div>
               
               {canManage && !editingItem && (
-                <div className="absolute top-1 right-1 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity ml-auto items-center">
                   <button 
-                    className="text-slate-500 p-1 hover:bg-slate-100 rounded"
+                    className="text-slate-500 p-1.5 hover:bg-slate-100 rounded"
                     onClick={(e) => { e.stopPropagation(); setEditingItem({ id: folder.id, type: 'folder', name: folder.nama }); }}
                     title="Ubah Nama"
                   >
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                   </button>
                   <button 
-                    className="text-red-500 p-1 hover:bg-red-50 rounded"
+                    className="text-red-500 p-1.5 hover:bg-red-50 rounded"
                     onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id); }}
                     title="Hapus Folder"
                   >
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                   </button>
                 </div>
               )}
@@ -435,56 +437,62 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
           ))}
           
           {displayFiles.map((file) => (
-            <div key={`file-${file.id}`} className="border border-slate-200 p-3 rounded-lg hover:border-blue-500 hover:shadow-sm transition-all group flex flex-col items-center text-center relative h-32" onClick={() => !editingItem && handleViewFile(file)}>
-              {getFileIcon(file.mime_type)}
+            <div key={`file-${file.id}`} className="border border-slate-200 p-3 rounded-lg hover:border-blue-500 hover:shadow-sm transition-all group flex items-center gap-4 relative bg-white" onClick={() => !editingItem && handleViewFile(file)}>
+              <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center">
+                {getFileIcon(file.mime_type)}
+              </div>
               
-              {editingItem?.id === file.id && editingItem.type === 'file' ? (
-                <form onSubmit={handleRename} className="w-full mt-1" onClick={(e) => e.stopPropagation()}>
-                  <input
-                    type="text"
-                    value={editingItem.name}
-                    onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
-                    className="w-full text-xs p-1 border border-blue-500 rounded outline-none"
-                    autoFocus
-                    onBlur={() => setEditingItem(null)}
-                  />
-                </form>
-              ) : (
-                <>
-                  <span className="text-xs font-medium text-slate-700 truncate w-full mt-1 px-1 cursor-pointer" title={file.original_name}>{file.original_name}</span>
-                  {file._path && file._path.length > 0 && (
-                    <span className="text-[9px] text-slate-400 truncate w-full mt-0.5">
-                      {file._path.join(' / ')}
-                    </span>
-                  )}
-                </>
-              )}
+              <div className="flex flex-col min-w-0 flex-1">
+                {editingItem?.id === file.id && editingItem.type === 'file' ? (
+                  <form onSubmit={handleRename} className="w-full max-w-xs" onClick={(e) => e.stopPropagation()}>
+                    <input
+                      type="text"
+                      value={editingItem.name}
+                      onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
+                      className="w-full text-sm p-1 border border-blue-500 rounded outline-none"
+                      autoFocus
+                      onBlur={() => setEditingItem(null)}
+                    />
+                  </form>
+                ) : (
+                  <>
+                    <span className="text-sm font-medium text-slate-700 truncate cursor-pointer" title={file.original_name}>{file.original_name}</span>
+                    {file._path && file._path.length > 0 && (
+                      <span className="text-[10px] text-slate-400 truncate">
+                        {file._path.join(' / ')}
+                      </span>
+                    )}
+                  </>
+                )}
+              </div>
               
-              <span className="text-[10px] text-slate-400 mt-auto">{file.size_kb} KB</span>
+              <div className="text-xs text-slate-500 hidden sm:block whitespace-nowrap ml-4 w-20 text-right">
+                {file.size_kb} KB
+              </div>
               
-              <div className="absolute top-1 right-1 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-white/80 rounded backdrop-blur-sm">
+              <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity ml-4 items-center">
                 <button 
-                  className="text-emerald-600 p-1 hover:bg-emerald-50 rounded cursor-pointer"
+                  className="text-emerald-600 p-1.5 hover:bg-emerald-50 rounded cursor-pointer"
                   onClick={(e) => { e.stopPropagation(); handleDownloadFile(file); }}
                   title="Download File"
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                 </button>
                 {canManage && !editingItem && (
                   <>
                     <button 
-                      className="text-slate-500 p-1 hover:bg-slate-100 rounded cursor-pointer"
+                      className="text-slate-500 p-1.5 hover:bg-slate-100 rounded cursor-pointer"
                       onClick={(e) => { e.stopPropagation(); setEditingItem({ id: file.id, type: 'file', name: file.original_name.split('.').slice(0, -1).join('.') || file.original_name }); }}
                       title="Ubah Nama"
                     >
-                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                     </button>
                     <button 
-                      className="text-red-500 p-1 hover:bg-red-50 rounded cursor-pointer"
+                      className="text-red-500 p-1.5 hover:bg-red-50 rounded cursor-pointer"
                       onClick={(e) => { e.stopPropagation(); handleDeleteFile(file.id); }}
                       title="Hapus File"
                     >
-                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                     </button>
                   </>
                 )}
