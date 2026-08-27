@@ -49,23 +49,40 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: 'Session tidak valid.' }, { status: 401 });
   }
 
-  // Gunakan Supabase Admin API untuk update (service role key)
-  const res = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${authUserId}`, {
-    method: 'PUT',
-    headers: {
-      apikey: SERVICE_KEY,
-      Authorization: `Bearer ${SERVICE_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(updatePayload),
-  });
+  if (SERVICE_KEY) {
+    // Gunakan Supabase Admin API untuk update (service role key)
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${authUserId}`, {
+      method: 'PUT',
+      headers: {
+        apikey: SERVICE_KEY,
+        Authorization: `Bearer ${SERVICE_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatePayload),
+    });
 
-  if (!res.ok) {
-    const err = await res.json() as { message?: string };
-    return NextResponse.json(
-      { error: err.message ?? 'Gagal memperbarui profil.' },
-      { status: res.status },
-    );
+    if (!res.ok) {
+      const err = await res.json() as { message?: string };
+      return NextResponse.json(
+        { error: err.message ?? 'Gagal memperbarui profil.' },
+        { status: res.status },
+      );
+    }
+  } else {
+    // Gunakan client API sebagai fallback
+    const userUpdate: { email?: string; password?: string; data?: any } = {};
+    if (updatePayload['email']) userUpdate.email = updatePayload['email'] as string;
+    if (updatePayload['password']) userUpdate.password = updatePayload['password'] as string;
+    if (updatePayload['user_metadata']) userUpdate.data = updatePayload['user_metadata'];
+
+    const { error: updateError } = await supabase.auth.updateUser(userUpdate);
+    
+    if (updateError) {
+      return NextResponse.json(
+        { error: updateError.message ?? 'Gagal memperbarui profil.' },
+        { status: 400 },
+      );
+    }
   }
 
   // ── Log aktivitas ────────────────────────────────────────────────────────

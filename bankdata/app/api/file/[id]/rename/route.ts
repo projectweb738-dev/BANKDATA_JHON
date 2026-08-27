@@ -16,8 +16,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ message: 'Nama file tidak valid.' }, { status: 400 });
   }
 
-  const { createServiceClient } = await import('@/lib/supabase/server');
-  const supabase = await createServiceClient();
+  const { createServiceClient, createClient } = await import('@/lib/supabase/server');
+  const supabase = process.env.SUPABASE_SERVICE_ROLE_KEY ? await createServiceClient() : await createClient();
 
   // Ambil data file existing
   const { data: existing, error: fetchError } = await supabase

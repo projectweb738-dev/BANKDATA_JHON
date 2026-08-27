@@ -10,8 +10,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
   const { id } = await params;
   const body = await request.json() as Record<string, unknown>;
-  const { createServiceClient } = await import('@/lib/supabase/server');
-  const supabase = await createServiceClient();
+  const { createServiceClient, createClient } = await import('@/lib/supabase/server');
+  const supabase = process.env.SUPABASE_SERVICE_ROLE_KEY ? await createServiceClient() : await createClient();
 
   const { data, error } = await supabase.from('folders').update({
     nama: body['nama'],
@@ -28,8 +28,8 @@ export async function DELETE(_req: NextRequest, { params }: RouteParams) {
   if (!user) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
 
   const { id } = await params;
-  const { createServiceClient } = await import('@/lib/supabase/server');
-  const supabase = await createServiceClient();
+  const { createServiceClient, createClient } = await import('@/lib/supabase/server');
+  const supabase = process.env.SUPABASE_SERVICE_ROLE_KEY ? await createServiceClient() : await createClient();
 
   const { data: existing } = await supabase.from('folders').select('id, nama').eq('id', id).is('deleted_at', null).single();
   if (!existing) return NextResponse.json({ message: 'Tidak ditemukan.' }, { status: 404 });
