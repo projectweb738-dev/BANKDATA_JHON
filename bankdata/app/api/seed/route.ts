@@ -17,7 +17,7 @@ export async function GET() {
         });
 
     const { data, error } = await supabase.auth.admin.createUser({
-          email: 'admin@sulteng',
+          email: 'admin@bpkad',
           password: 'GantiSegera!2026',
           email_confirm: true
         });

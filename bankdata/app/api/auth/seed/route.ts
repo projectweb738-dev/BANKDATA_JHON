@@ -17,11 +17,11 @@ export async function GET() {
         });
 
     const usersToCreate = [
-      { email: 'admin@sulteng', role: 'admin', name: 'Administrator' },
-      { email: 'keuangan@sulteng', role: 'operator-keuangan', name: 'Bagian Keuangan' },
-      { email: 'pegawai@sulteng', role: 'operator-kepegawaian', name: 'Bagian Kepegawaian' },
-      { email: 'program@sulteng', role: 'operator-program', name: 'Bagian Program' },
-      { email: 'aset@sulteng', role: 'operator-aset', name: 'Bagian Aset' },
+      { email: 'admin@bpkad', role: 'admin', name: 'Administrator' },
+      { email: 'keuangan@bpkad', role: 'operator-keuangan', name: 'Bagian Keuangan' },
+      { email: 'kepegawaian@bpkad', role: 'operator-kepegawaian', name: 'Bagian Kepegawaian' },
+      { email: 'program@bpkad', role: 'operator-program', name: 'Bagian Program' },
+      { email: 'aset@bpkad', role: 'operator-aset', name: 'Bagian Aset' },
     ];
 
     const results = [];

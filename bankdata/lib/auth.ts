@@ -19,7 +19,7 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
   let role = (user.user_metadata?.["role"] as RoleType) ?? "viewer";
 
   // HOTFIX: Set role to admin for the default seed account if metadata is missing
-  if (user.email === "admin@sulteng" && role === "viewer") {
+  if (user.email === "admin@bpkad" && role === "viewer") {
     role = "admin";
   }
 
