@@ -85,10 +85,11 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
     searchTimerRef.current = setTimeout(async () => {
       try {
         const res = await fetch(`/api/folder?modul=${modul}&global=true&q=${encodeURIComponent(query)}`);
+        if (!res.ok) throw new Error('API failed');
         const data = await res.json();
         setSearchResults({ folders: data.data ?? [], files: data.files ?? [] });
       } catch {
-        setSearchResults({ folders: [], files: [] });
+        setSearchResults(null);
       } finally {
         setIsSearching(false);
       }

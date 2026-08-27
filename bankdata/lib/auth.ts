@@ -1,11 +1,10 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { RoleType, SessionUser } from "@/lib/types";
-import { cache } from "react";
 
 // ─── Get Current User dari Supabase Auth ────────────────────────────────────
 
-export const getCurrentUser = cache(async function getCurrentUser(): Promise<SessionUser | null> {
+export async function getCurrentUser(): Promise<SessionUser | null> {
   const supabase = await createClient();
   // Gunakan getSession yang lebih cepat dari getUser karena tidak melakukan request jaringan (memanfaatkan cookie yang sudah divallidasi middleware)
   const {
@@ -63,7 +62,7 @@ export const getCurrentUser = cache(async function getCurrentUser(): Promise<Ses
     unit_kerja,
     is_active,
   };
-});
+}
 
 // ─── Require Auth — redirect ke /login jika tidak login ─────────────────────
 
