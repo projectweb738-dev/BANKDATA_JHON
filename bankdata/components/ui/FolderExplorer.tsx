@@ -45,6 +45,7 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
   const [searchResults, setSearchResults] = useState<{ folders: Folder[]; files: FileItem[] } | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [previewFile, setPreviewFile] = useState<{ file: FileItem, url: string, isOffice: boolean, ext: string } | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -229,15 +230,11 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
 
   const handleViewFile = (file: FileItem) => {
     const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/bankdata-storage/${file.path}`;
-    const ext = file.original_name.split('.').pop()?.toLowerCase();
+    const ext = file.original_name.split('.').pop()?.toLowerCase() || '';
     
-    const isOffice = ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(ext || '');
+    const isOffice = ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(ext);
     
-    if (isOffice) {
-      window.open(`https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`, '_blank');
-    } else {
-      window.open(url, '_blank');
-    }
+    setPreviewFile({ file, url, isOffice, ext });
   };
 
   const handleDownloadFile = (file: FileItem) => {
@@ -508,6 +505,76 @@ export default function FolderExplorer({ modul, canManage = false }: FolderExplo
               <p>{q ? `Tidak ditemukan folder/file "${searchQuery}" di seluruh modul` : 'Folder & File masih kosong'}</p>
             </div>
           )}
+        </div>
+      )}
+
+      {/* File Preview Modal */}
+      {previewFile && (
+        <div className="fixed inset-0 z-[100] bg-black/90 flex flex-col items-center justify-center backdrop-blur-sm">
+          <div className="absolute top-0 w-full flex items-center justify-between p-4 bg-gradient-to-b from-black/80 to-transparent">
+            <div className="flex items-center gap-4 text-white">
+              <div className="w-10 h-10 flex items-center justify-center bg-white/10 rounded-full">
+                {getFileIcon(previewFile.file.mime_type)}
+              </div>
+              <div>
+                <p className="font-medium text-lg">{previewFile.file.original_name}</p>
+                <p className="text-xs text-white/60">{previewFile.file.size_kb} KB</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleDownloadFile(previewFile.file)}
+                className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+                title="Download"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setPreviewFile(null)}
+                className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+                title="Tutup"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <div className="w-full h-full pt-20 pb-4 px-4 sm:px-12 flex items-center justify-center">
+            {previewFile.isOffice ? (
+              <iframe 
+                src={`https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(previewFile.url)}`}
+                className="w-full h-full bg-white rounded-xl shadow-2xl"
+                frameBorder="0"
+              />
+            ) : previewFile.ext === 'pdf' ? (
+              <iframe 
+                src={previewFile.url}
+                className="w-full h-full bg-white rounded-xl shadow-2xl"
+                frameBorder="0"
+              />
+            ) : ['png', 'jpg', 'jpeg', 'webp', 'gif', 'svg'].includes(previewFile.ext) ? (
+              <img 
+                src={previewFile.url} 
+                alt={previewFile.file.original_name}
+                className="max-w-full max-h-full object-contain drop-shadow-2xl"
+              />
+            ) : (
+              <div className="text-center text-white">
+                <svg className="w-24 h-24 mx-auto mb-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <p className="text-xl font-medium mb-2">Pratinjau tidak tersedia</p>
+                <p className="text-white/60 mb-6">File ini tidak dapat dipratinjau. Silakan unduh untuk melihat isinya.</p>
+                <Button onClick={() => handleDownloadFile(previewFile.file)}>
+                  Download File
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

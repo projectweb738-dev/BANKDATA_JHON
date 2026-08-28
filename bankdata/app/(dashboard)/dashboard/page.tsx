@@ -190,34 +190,7 @@ export default async function DashboardPage() {
             })}
           </div>
 
-          {/* Ringkasan Keuangan */}
-          <div className="card p-6">
-            <h3 className="font-heading font-semibold text-slate-800 mb-4">Ringkasan Anggaran</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <p className="text-xs text-slate-500 mb-1">Total Anggaran</p>
-                <p className="text-xl font-bold text-slate-800">{formatRupiah(stats.keuangan.totalAnggaran)}</p>
-              </div>
-              <div>
-                <p className="text-xs text-slate-500 mb-1">Total Realisasi</p>
-                <p className="text-xl font-bold text-emerald-600">{formatRupiah(stats.keuangan.totalRealisasi)}</p>
-              </div>
-              <div>
-                <p className="text-xs text-slate-500 mb-1">Persentase Capaian</p>
-                <p className="text-xl font-bold text-slate-800">{persen}%</p>
-              </div>
-            </div>
-            <div className="mt-4">
-              <div className="w-full bg-slate-100 rounded-full h-3">
-                <div
-                  className={`h-3 rounded-full transition-all duration-700 ${
-                    persen >= 90 ? 'bg-emerald-500' : persen >= 60 ? 'bg-blue-500' : persen >= 30 ? 'bg-yellow-500' : 'bg-red-500'
-                  }`}
-                  style={{ width: `${Math.min(persen, 100)}%` }}
-                />
-              </div>
-            </div>
-          </div>
+
         </div>
       </div>
     </>
