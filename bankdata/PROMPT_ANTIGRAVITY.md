@@ -1,13 +1,13 @@
-# PROMPT UNTUK ANTIGRAVITY — Lengkapi Aplikasi Bank Data
+# PROMPT UNTUK ANTIGRAVITY — Lengkapi Aplikasi Arsip Digital BPKAD
 
 Salin semua teks di bawah ini ke Antigravity.
 
 ---
 
-Saya sedang membangun aplikasi web **"Bank Data"** untuk Kantor Gubernur Sulawesi Tengah menggunakan **Laravel 11 + MySQL + Tailwind CSS (via CDN, tanpa build step)**. Sebagian besar project sudah saya buat (migrations, models, controllers, sebagian view, auth, middleware role). Tolong lengkapi dan sempurnakan sesuai spesifikasi berikut.
+Saya sedang membangun aplikasi web **"Arsip Digital BPKAD"** untuk Kantor Gubernur Sulawesi Tengah menggunakan **Laravel 11 + MySQL + Tailwind CSS (via CDN, tanpa build step)**. Sebagian besar project sudah saya buat (migrations, models, controllers, sebagian view, auth, middleware role). Tolong lengkapi dan sempurnakan sesuai spesifikasi berikut.
 
 ## 1. Konteks Aplikasi
-Aplikasi bank data internal dengan 4 modul utama:
+Aplikasi Arsip Digital BPKAD internal dengan 4 modul utama:
 1. **Data Kepegawaian** — data pegawai (NIP, nama, jabatan, golongan, unit kerja, status)
 2. **Data Program** — program kerja per tahun anggaran (kode, nama, target, realisasi, status)
 3. **Data Aset** — inventaris aset (kode, nama, kategori, lokasi, kondisi, foto)

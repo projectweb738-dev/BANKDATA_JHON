@@ -10,8 +10,8 @@ import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: {
-    default: "Dashboard — Bank Data",
-    template: "%s — Bank Data",
+    default: "Dashboard — Arsip Digital BPKAD",
+    template: "%s — Arsip Digital BPKAD",
   },
 };
 
@@ -34,7 +34,7 @@ export default async function DashboardLayout({
           <SidebarTrigger className="text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-md p-1.5 transition-colors shrink-0" />
           <div className="h-4 w-px bg-slate-200 shrink-0" />
           <span className="text-xs font-medium text-slate-500 truncate">
-            Sistem Informasi Bank Data
+            Sistem Informasi Arsip Digital BPKAD
           </span>
         </header>
         <main className="flex-1 overflow-y-auto">{children}</main>

@@ -216,7 +216,7 @@ function SidebarHeaderContent({ user }: { user: SessionUser }) {
         {!isCollapsed && (
           <div className="min-w-0">
             <p className="text-sm font-bold text-white truncate leading-tight">
-              Bank Data
+              Arsip Digital BPKAD
             </p>
             <p className="text-[11px] text-slate-400 truncate leading-tight">
               {user.unit_kerja || "BPKAD Provinsi Sulawesi Tengah"}

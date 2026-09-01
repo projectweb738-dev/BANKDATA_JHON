@@ -1,6 +1,6 @@
 # Script untuk upload semua env vars ke Vercel production
 $env_vars = @{
-    "APP_NAME" = "BankData"
+    "APP_NAME" = "ArsipDigitalBPKAD"
     "APP_ENV" = "production"
     "APP_KEY" = "base64:WGU157eGk3xSuh80Ex342wDIHuIZ0WcmLikyXrsqkBw="
     "APP_DEBUG" = "false"
@@ -27,7 +27,7 @@ $env_vars = @{
     "CACHE_STORE" = "array"
     "MAIL_MAILER" = "log"
     "MAIL_FROM_ADDRESS" = "hello@example.com"
-    "MAIL_FROM_NAME" = "BankData"
+    "MAIL_FROM_NAME" = "ArsipDigitalBPKAD"
     "VIEW_COMPILED_PATH" = "/tmp/storage/framework/views"
     "AWS_ACCESS_KEY_ID" = "2e710685e6bc12654f86deb1096b30f1"
     "AWS_SECRET_ACCESS_KEY" = "733f38fc3c816229dc1b5f7bea0e9054a11ea43847deaa61c694905a36532ef7"

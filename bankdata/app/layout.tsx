@@ -8,12 +8,12 @@ const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: {
-    default: "Bank Data — BPKAD Provinsi Sulawesi Tengah",
-    template: "%s | Bank Data Sulawesi Tengah",
+    default: "Arsip Digital BPKAD — BPKAD Provinsi Sulawesi Tengah",
+    template: "%s | Arsip Digital BPKAD Sulawesi Tengah",
   },
   description:
-    "Sistem Bank Data internal Kantor Gubernur Sulawesi Tengah. Kelola data kepegawaian, program kerja, aset, dan keuangan secara terpadu.",
-  keywords: ["bank data", "sulawesi tengah", "kepegawaian", "aset", "keuangan"],
+    "Sistem Arsip Digital BPKAD internal Kantor Gubernur Sulawesi Tengah. Kelola data kepegawaian, program kerja, aset, dan keuangan secara terpadu.",
+  keywords: ["arsip digital bpkad", "sulawesi tengah", "kepegawaian", "aset", "keuangan"],
   robots: { index: false, follow: false }, // aplikasi internal
   icons: {
     icon: "/logo-sulteng.png",

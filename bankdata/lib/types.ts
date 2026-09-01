@@ -1,5 +1,5 @@
 // ============================================================
-// TYPES — Bank Data Application
+// TYPES — Arsip Digital BPKAD Application
 // Konversi dari Laravel Eloquent models ke TypeScript interfaces
 // ============================================================
 

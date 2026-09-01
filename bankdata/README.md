@@ -1,6 +1,6 @@
-# Bank Data — Kantor Gubernur Sulawesi Tengah
+# Arsip Digital BPKAD — Kantor Gubernur Sulawesi Tengah
 
-Aplikasi bank data internal dengan 4 modul: **Data Kepegawaian, Data Program, Data Aset, Data Keuangan**.
+Aplikasi Arsip Digital BPKAD internal dengan 4 modul: **Data Kepegawaian, Data Program, Data Aset, Data Keuangan**.
 Dibangun dengan Laravel 11 + MySQL, role-based access (Spatie Permission), audit log (Spatie Activitylog), dan proteksi upload dokumen.
 
 ## 1. Instalasi Lokal
